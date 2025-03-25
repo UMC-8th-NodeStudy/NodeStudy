@@ -4,11 +4,12 @@
   "description": "UMC 7기 Node.js 파트 첫 시작 프로젝트",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "author": "Subin Kim <sudosubin@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.0.0-0"
+    "express": "^5.0.0-0",
+    "nodemon": "^3.1.9"
   }
 }
