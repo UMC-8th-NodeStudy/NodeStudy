@@ -9,7 +9,6 @@
   "author": "Subin Kim <sudosubin@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.0.0-0",
-    "nodemon": "^3.1.9"
+    "express": "^5.0.0-0"
   }
 }
