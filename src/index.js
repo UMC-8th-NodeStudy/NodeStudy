@@ -8,7 +8,7 @@ const port = 3000;
 //app.get() : Get 요청으로 /(루트 경로)로 접속하면 콜백함수(매개변수로 전달되는 함수)를 실행함
 // /(루트 경로)로 접속하면 "Hello World!" 출력력
 app.get("/", (req, res) => {
-  res.send("Hello 현준");
+  res.send("안녕 현준");
 });
 
 //app.listen() : 서버를 특정포트에서 실행하는 함수
