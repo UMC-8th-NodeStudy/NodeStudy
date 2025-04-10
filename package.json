@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/UMC-8th-NodeStudy/NodeStudy#readme",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^5.0.0"
   }
 }
