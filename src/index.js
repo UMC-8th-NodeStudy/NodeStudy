@@ -3,7 +3,10 @@ import cors from "cors";
 //express 모듈 불러오기
 //const express = require('express')  -> CommonJs
 import express from "express"; // -> ES Module
-import { handleUserSignUp } from "./controller/user.controller.js";
+
+//router 불러오기
+import reviewRouter from "./routes/review.routes.js";
+import userRouter from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -21,7 +24,12 @@ app.get("/", (req, res) => {
   res.send("안녕 현준");
 });
 
-app.post("/api/users/register", handleUserSignUp); //정해진 URL로 POST 요청을 보내면 handleUserSignUp 함수가 실행행
+// 미들웨어 설정
+app.use(express.json()); // JSON 본문 파싱
+
+// 라우팅 설정
+app.use("/api/users", userRouter); // 회원 관련 API
+app.use("/api/reviews", reviewRouter); // 리뷰 관련 API
 
 //app.listen() : 서버를 특정포트에서 실행하는 함수
 //서버가 성공적으로 시작되었을때 콜백함수 실행
