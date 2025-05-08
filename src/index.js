@@ -5,7 +5,7 @@ import cors from "cors";
 import express from "express"; // -> ES Module
 
 //router 불러오기
-import reviewRouter from "./routes/review.routes.js";
+import reviewRouter from "./routes/store.routes.js";
 import userRouter from "./routes/user.routes.js";
 
 dotenv.config();

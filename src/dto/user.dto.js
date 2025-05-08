@@ -14,6 +14,18 @@ export const bodyToUser = (body) => {
 };
 
 export const responseFromUser = ({ user, preferences }) => {
+  const preferFoods = preferences.map(
+    (preference) => preference.foodCategory.name
+  );
+
+  return {
+    email: user.email,
+    name: user.name,
+    preferCategory: preferFoods,
+  };
+};
+/**
+export const responseFromUser = ({ user, preferences }) => {
   const u = user[0]; // getUser의 반환이 배열이기 때문에 첫 번째 요소 사용
 
   return {
@@ -31,3 +43,4 @@ export const responseFromUser = ({ user, preferences }) => {
     })),
   };
 };
+ */
