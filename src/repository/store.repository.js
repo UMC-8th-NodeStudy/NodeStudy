@@ -2,18 +2,26 @@ import { pool } from "../db.config.js";
 import { prisma } from "../db.config.js";
 
 export const insertReview = async ({ storeId, userId, rating, content }) => {
-  const conn = await pool.getConnection();
-  try {
-    const [result] = await conn.query(
-      `INSERT INTO review (store_id, user_id, rating, content)
-            VALUES (?, ?, ?, ?)`,
-      [storeId, userId, rating, content]
-    );
-    return result.insertId;
-  } finally {
-    conn.release();
-  }
+  const review = await prisma.userStoreReview.create({
+    data: {
+      storeId,
+      userId,
+      rating,
+      content,
+    },
+    //  include: {
+    //   store: true, // 필요하면 관계도 포함
+    //   user: true,
+    // },
+  });
+  return review;
 };
+/**
+Prisma에서 create()나 find...() 실행 후 기본적으로 반환하는 객체에는 include/select하지 않은 관계 정보는 안 들어 있습니다.
+그래서:
+storeId, userId, content, rating 같은 단순 필드는 return review 만으로도 잘 반환됨
+하지만 user나 store의 상세 정보도 함께 받고 싶다면 include가 필요합니다.
+ */
 
 //리뷰 모두 조회하기
 //특정 가게(storeId)의 리뷰들 중,

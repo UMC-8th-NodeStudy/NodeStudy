@@ -1,4 +1,5 @@
 import { pool } from "../db.config.js";
+import { prisma } from "../db.config.js";
 
 // User 데이터 삽입(ORM(prisma) 적용)
 export const addUser = async (data) => {
