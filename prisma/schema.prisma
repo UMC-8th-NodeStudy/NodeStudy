@@ -61,6 +61,7 @@ model Store {
 model UserStoreReview {
   id       Int    @id @default(autoincrement())
   content  String @db.Text
+  rating Int @default(0)
 
   // 외래 키
   storeId  Int
