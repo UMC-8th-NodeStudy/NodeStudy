@@ -8,6 +8,10 @@ import express from "express"; // -> ES Module
 import reviewRouter from "./routes/store.routes.js";
 import userRouter from "./routes/user.routes.js";
 
+//swagger 세팅
+import swaggerAutogen from "swagger-autogen";
+import swaggerUiExpress from "swagger-ui-express";
+
 dotenv.config();
 
 const app = express();
@@ -73,6 +77,42 @@ app.use((err, req, res, next) => {
   });
 });
 
+//Swagger 세팅
+app.use(
+  "/docs",
+  swaggerUiExpress.serve,
+  swaggerUiExpress.setup(
+    {},
+    {
+      swaggerOptions: {
+        url: "/openapi.json",
+      },
+    }
+  )
+);
+
+//Swagger 세팅
+app.get("/openapi.json", async (req, res, next) => {
+  // #swagger.ignore = true
+  const options = {
+    openapi: "3.0.0",
+    disableLogs: true,
+    writeOutputFile: false,
+  };
+  const outputFile = "/dev/null"; // 파일 출력은 사용하지 않습니다.
+  const routes = ["./src/index.js"];
+  const doc = {
+    info: {
+      title: "UMC 8th",
+      description: "UMC 8th Node.js 테스트 프로젝트입니다.",
+    },
+    host: "localhost:3000",
+  };
+
+  const result = await swaggerAutogen(options)(outputFile, routes, doc);
+  res.json(result ? result.data : null);
+});
+
 //app.listen() : 서버를 특정포트에서 실행하는 함수
 //서버가 성공적으로 시작되었을때 콜백함수 실행
 app.listen(port, () => {
@@ -90,12 +130,14 @@ app.use(myLogger);
 
 // "/" 경로의 미들웨어
 app.get("/", (req, res) => {
+  // #swagger.ignore = true
   console.log("/");
   res.send("Hello UMC!");
 });
 
 // "/hello" 경로의 미들웨어
 app.get("/hello", (req, res) => {
+  // #swagger.ignore = true
   console.log("/hello");
   res.send("Hello world!");
 });
