@@ -5,6 +5,70 @@ import { StatusCodes } from "http-status-codes";
 
 //리뷰 추가하기
 export const handleAddReview = async (req, res) => {
+  /*
+    #swagger.summary = '리뷰 추가하기 API';
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              storeId: { type: "number" },
+              userId: { type: "number" },
+              rating: { type: "number" },
+              content: { type: "string"}
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[200] = {
+      description: "리뷰 추가하기 성공 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "SUCCESS" },
+              error: { type: "object", nullable: true, example: null },
+              success: {
+                type: "object",
+                properties: {
+                  id : { type: "number"}
+                  storeId: { type: "number" },
+                  userId: { type: "number" },
+                  rating: { type: "number" },
+                  content: { type: "string"}
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "리뷰 추가하기 실패 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "R001" },
+                  reason: { type: "string" }
+                }
+              },
+              success: { type: "object", nullable: true, example: null }
+            }
+          }
+        }
+      }
+    };
+*/
   try {
     const { storeId, userId, rating, content } = req.body;
 
@@ -29,6 +93,41 @@ export const handleAddReview = async (req, res) => {
 
 //리뷰 조회하기(커서 기반 마이그레이션[페이징] 처리 O)
 export const handleListStoreReviews = async (req, res, next) => {
+  /*
+    #swagger.summary = '상점 리뷰 목록 조회 API';
+    #swagger.responses[200] = {
+      description: "상점 리뷰 목록 조회 성공 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "SUCCESS" },
+              error: { type: "object", nullable: true, example: null },
+              success: {
+                type: "object",
+                properties: {
+                  data: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "number" },
+                        store: { type: "object", properties: { id: { type: "number" }, name: { type: "string" } } },
+                        user: { type: "object", properties: { id: { type: "number" }, email: { type: "string" }, name: { type: "string" } } },
+                        content: { type: "string" }
+                      }
+                    }
+                  },
+                  pagination: { type: "object", properties: { cursor: { type: "number", nullable: true } }}
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  */
   const reviews = await listStoreReviews(
     //storeId와 cursor를 인자로 넘겨서 리뷰 목록을 비동기로 받아옴
     parseInt(req.params.storeId),
