@@ -12,14 +12,14 @@ export const handleUserSignUp = async (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              email: { type: "string" },
-              name: { type: "string" },
-              gender: { type: "string" },
+              email: { type: "string", example: "jhjk1234@naver.com" },
+              name: { type: "string", example: "주현준"},
+              gender: { type: "string", example: "남성"},
               birth: { type: "string", format: "date" },
-              address: { type: "string" },
-              detailAddress: { type: "string" },
-              phoneNumber: { type: "string" },
-              preferences: { type: "array", items: { type: "number" } }
+              address: { type: "string",example: "부천시"},
+              detailAddress: { type: "string",example : "상동"},
+              phoneNumber: { type: "string",example: "010-3616-5535"},
+              preferences: { type: "array", items: { type: "number" }, example:"1"}
             }
           }
         }

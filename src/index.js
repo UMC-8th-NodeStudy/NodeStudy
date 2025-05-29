@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import cors from "cors";
 //express 모듈 불러오기
 //const express = require('express')  -> CommonJs
@@ -12,7 +14,25 @@ import userRouter from "./routes/user.routes.js";
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
 
+//OAuth2 import 세팅
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import session from "express-session";
+import passport from "passport";
+import { googleStrategy } from "./auth.config.js";
+import { prisma } from "./db.config.js";
+import { kakaoStrategy } from "./auth.config.js";
 dotenv.config();
+
+//OAuth2 세팅
+passport.use(googleStrategy);
+passport.use(kakaoStrategy);
+
+//passport.use(...) 는 passport 라이브러리에 저희가 정의한 로그인 방식을 등록하는 코드입니다.
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+//passport.serializeUser, passport.deserializeUser 는 Session에 사용자 정보를 저장할 때,
+//그리고 Session의 정보를 가져올 때 사용하는 함수들로, 우선은 특별히 변경할 내용이 없어 그대로 주고 받도록 정의했습니다.
 
 const app = express();
 const port = process.env.PORT;
@@ -40,6 +60,33 @@ app.use(cors()); // cors 방식 허용
 app.use(express.static("public")); // 정적 파일 접근
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+
+/*
+app.use(session(...)) 는 HTTP Cookie를 이용해서 Session ID(sid)는 프론트엔드(브라우저)에 저장하고, 
+이에 연결되는 사용자 데이터는 store를 통해 Prisma로 연결된 저희의 MySQL DB에 저장하게 됩니다.
+*/
+app.use(
+  session({
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, //ms
+    },
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.EXPRESS_SESSION_SECRET,
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+/*
+app.use(passport.session()) 는 앞으로 사용자의 모든 요청에 HTTP Cookie 중 sid(session id) 값이 있다면, 
+이를 MySQL DB에서 찾아, 일치하는 Session이 있다면 사용자 데이터를 가져와 req.user에 넣어주게 됩니다.
+*/
 
 /** 
 //app.get() : Get 요청으로 /(루트 경로)로 접속하면 콜백함수(매개변수로 전달되는 함수)를 실행함
@@ -76,6 +123,44 @@ app.use((err, req, res, next) => {
     data: err.data || null,
   });
 });
+
+//Oauth2 세팅(구글)
+app.get("/oauth2/login/google", passport.authenticate("google"));
+// /oauth2/login/google 로 접속하면 자동으로 Google 로그인 주소로 이동하여 사용자가 Google 로그인을 할 수 있도록 해줍니다.
+app.get(
+  "/oauth2/callback/google",
+  passport.authenticate("google", {
+    failureRedirect: "/oauth2/login/google",
+    failureMessage: true,
+  }),
+  (req, res) => res.redirect("/")
+);
+/*
+oauth2/callback/google 는 Google 로그인이 성공하면 자동으로 되돌아오는 주소입니다. 
+여기에서는 쿼리 파라미터로 전달된 code 값을 이용해 Google API를 호출하여 사용자의 프로필 정보를 조회해오고, 이를 Session에 저장하게 됩니다.
+*/
+
+//Oauth2 세팅(카카오)
+// 카카오 로그인 진입
+// app.get("/oauth2/login/kakao", passport.authenticate("kakao")); -> 기존꺼
+// ✅ 카카오 로그인 진입 (자동 로그인 방지: 로그인 화면 강제 표시)
+app.get("/oauth2/login/kakao", (req, res, next) => {
+  passport.authenticate("kakao", {
+    prompt: "login", // ✅ 이미 동의했더라도 로그인 화면 다시 표시
+  })(req, res, next);
+});
+
+// 카카오 로그인 콜백
+app.get(
+  "/oauth2/callback/kakao",
+  passport.authenticate("kakao", {
+    failureRedirect: "/oauth2/login/kakao",
+    failureMessage: true,
+  }),
+  (req, res) => {
+    res.redirect("/"); // 로그인 성공 시 리디렉션
+  }
+);
 
 //Swagger 세팅
 app.use(

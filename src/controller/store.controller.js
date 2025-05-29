@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 
 //리뷰 추가하기
 export const handleAddReview = async (req, res) => {
+  // #review Swagger: 리뷰 추가 API
   /*
     #swagger.summary = '리뷰 추가하기 API';
     #swagger.requestBody = {
@@ -69,6 +70,7 @@ export const handleAddReview = async (req, res) => {
       }
     };
 */
+  // #
   try {
     const { storeId, userId, rating, content } = req.body;
 
@@ -93,6 +95,7 @@ export const handleAddReview = async (req, res) => {
 
 //리뷰 조회하기(커서 기반 마이그레이션[페이징] 처리 O)
 export const handleListStoreReviews = async (req, res, next) => {
+  // #review Swagger: 리뷰 조회하기 API
   /*
     #swagger.summary = '상점 리뷰 목록 조회 API';
     #swagger.responses[200] = {
@@ -128,6 +131,7 @@ export const handleListStoreReviews = async (req, res, next) => {
       }
     };
   */
+  // #endregion
   const reviews = await listStoreReviews(
     //storeId와 cursor를 인자로 넘겨서 리뷰 목록을 비동기로 받아옴
     parseInt(req.params.storeId),
