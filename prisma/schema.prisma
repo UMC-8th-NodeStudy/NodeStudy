@@ -23,8 +23,14 @@ model User {
   detailAddress String?  @map("detail_address") @db.VarChar(255)
   phoneNumber   String   @map("phone_number") @db.VarChar(15)
 
+  // ✅ 추가: 소셜 로그인 식별자
+  kakaoId       String?  @unique
+  googleId      String?  @unique
+
   userFavorCategories UserFavorCategory[]
   reviews UserStoreReview[]   // ✅ 이 유저가 작성한 여러 개의 리뷰
+
+   
 
   @@map("user")
 }
@@ -70,4 +76,13 @@ model UserStoreReview {
   // 관계 설정
   store    Store @relation(fields: [storeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   user     User  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model Session {
+  id          String    @id
+  sid         String    @unique
+  data        String    @db.VarChar(512)
+  expiresAt   DateTime  @map("expires_at")
+
+  @@map("session")
 }
